@@ -25,46 +25,49 @@ services:
     depends_on:
       - bootnode
 
-  orion1:
-    build:
-      context: orion
-    image: quickstart/orion:${ORION_VERSION}
-    entrypoint: /orion/bin/orion ${ORION_DATA_FOLDER1}/orion.conf
+# orion1:
+#   build:
+#     context: orion
+#   image: quickstart/orion:${ORION_VERSION}
+#   entrypoint: /orion/bin/orion ${ORION_DATA_FOLDER1}/orion.conf
   orion2:
     image: quickstart/orion:${ORION_VERSION}
     entrypoint: /orion/bin/orion ${ORION_DATA_FOLDER2}/orion.conf
+    ports:
+      - 9001:10001
+      - 9002:10002
   orion3:
     image: quickstart/orion:${ORION_VERSION}
     entrypoint: /orion/bin/orion ${ORION_DATA_FOLDER3}/orion.conf
 
-  node1:
-    image: quickstart/besu:${BESU_VERSION}-privacy
-    environment:
-      - BESU_PUBLIC_KEY_DIRECTORY=${BESU_PUBLIC_KEY_DIRECTORY}
-    command: ["--network=dev",
-              "--privacy-enabled=true",
-              "--privacy-url=${ORION_URL1}",
-              "--rpc-http-enabled",
-              "--rpc-http-host=0.0.0.0",
-              "--rpc-http-port=8545",
-              "--rpc-http-cors-origins=*",
-              "--rpc-ws-enabled",
-              "--rpc-ws-host=0.0.0.0",
-              "--rpc-ws-port=8546",
-              "--rpc-http-api=EEA,WEB3,ETH,NET,PRIV",
-              "--host-whitelist=*",
-              "--min-gas-price=0",
-              "--privacy-public-key-file=/etc/besu/privacy_public_key"]
-    volumes:
-      - public-keys:${BESU_PUBLIC_KEY_DIRECTORY}
-      - ${PWD}/besu/data1:/var/lib/besu
-      - ${PWD}/orion/orion1:/etc/besu
-    depends_on:
-      - bootnode
-      - orion1
-    ports:
-      - 20000:8545
-      - 20001:8546
+  # node1:
+  #   image: quickstart/besu:${BESU_VERSION}-privacy
+  #   environment:
+  #     - BESU_PUBLIC_KEY_DIRECTORY=${BESU_PUBLIC_KEY_DIRECTORY}
+  #   command: ["--network=dev",
+  #             "--privacy-enabled=true",
+  #             "--privacy-url=${ORION_URL1}",
+  #             "--rpc-http-enabled",
+  #             "--rpc-http-host=0.0.0.0",
+  #             "--rpc-http-port=8545",
+  #             "--rpc-http-cors-origins=*",
+  #             "--rpc-ws-enabled",
+  #             "--rpc-ws-host=0.0.0.0",
+  #             "--rpc-ws-port=8546",
+  #             "--rpc-http-api=EEA,WEB3,ETH,NET,PRIV",
+  #             "--host-whitelist=*",
+  #             "--min-gas-price=0",
+  #             "--privacy-public-key-file=/etc/besu/privacy_public_key"]
+  #   volumes:
+  #     - public-keys:${BESU_PUBLIC_KEY_DIRECTORY}
+  #     - ${PWD}/besu/data1:/var/lib/besu
+  #     - ${PWD}/orion/orion1:/etc/besu
+  #   depends_on:
+  #     - bootnode
+  #     - orion1
+  #   ports:
+  #     - 20000:8545
+  #     - 20001:8546
 
   node2:
     image: quickstart/besu:${BESU_VERSION}-privacy
