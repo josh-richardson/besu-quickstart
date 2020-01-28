@@ -11,6 +11,8 @@ services:
       - ./config/orion/log-config.xml:/config/log-config.xml
       - ./config/orion/networkFiles/orion1:/config/orion/
       - ./logs/orion:/var/log/
+    ports:
+      - 40000:8888
 
   orion2:
     image: "pegasyseng/orion:develop"
@@ -21,6 +23,8 @@ services:
       - ./config/orion/log-config.xml:/config/log-config.xml
       - ./config/orion/networkFiles/orion2:/config/orion/
       - ./logs/orion:/var/log/
+    ports:
+      - 40001:8888
 
   orion3:
     image: "pegasyseng/orion:develop"
@@ -31,6 +35,9 @@ services:
       - ./config/orion/log-config.xml:/config/log-config.xml
       - ./config/orion/networkFiles/orion3:/config/orion/
       - ./logs/orion:/var/log/
+    ports:
+      - 40002:8888
+      
 
   bootnode:
     build:
@@ -83,6 +90,11 @@ services:
       - LOG4J_CONFIGURATION_FILE=/config/log-config.xml
     command: [
       "--network=dev",
+      "--rpc-http-enabled",
+      "--rpc-http-host=0.0.0.0",
+      "--rpc-http-port=8545",
+      "--rpc-http-cors-origins=*",
+      "--rpc-http-api=EEA,WEB3,ETH,NET,PRIV",
       "--miner-enabled",
       "--miner-coinbase=${MINER_COINBASE}",
       "--metrics-enabled",
@@ -95,12 +107,15 @@ services:
       - ./logs/besu:/var/log/
     depends_on:
       - bootnode
+    ports:
+      - 50000:8545/tcp
 
   node1:
     image: quickstart/besu:${BESU_VERSION}-privacy
     environment:
       - BESU_PUBLIC_KEY_DIRECTORY=${BESU_PUBLIC_KEY_DIRECTORY}
       - LOG4J_CONFIGURATION_FILE=/config/log-config.xml
+      - JAVA_OPTS=-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:8000
     command: [
       "--node-private-key-file=/opt/besu/keys/key",
       "--network=dev",
@@ -132,6 +147,7 @@ services:
     ports:
       - 20000:8545/tcp
       - 20001:8546/tcp
+      - 8000:8000
 
   node2:
     image: quickstart/besu:${BESU_VERSION}-privacy
