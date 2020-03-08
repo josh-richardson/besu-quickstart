@@ -6,28 +6,38 @@ services:
     image: "pegasyseng/orion:develop"
     environment:
       - ORION_OTHERNODES=http://orion2:8080/,http://orion3:8080/
+      - LOG4J_CONFIGURATION_FILE=/config/log-config.xml
     command: ["/config/orion.conf"]
     volumes:
       - ./config/orion/orion.conf:/config/orion.conf
       - ./config/orion/networkFiles/orion1:/keys/
+      - ./logs/orion:/var/log/
+      - ./config/orion/log-config.xml:/config/log-config.xml
 
   orion2:
     image: "pegasyseng/orion:develop"
     environment:
       - ORION_OTHERNODES=http://orion1:8080/,http://orion3:8080/
+      - LOG4J_CONFIGURATION_FILE=/config/log-config.xml
     command: ["/config/orion.conf"]
     volumes:
       - ./config/orion/orion.conf:/config/orion.conf
       - ./config/orion/networkFiles/orion2:/keys/
+      - ./logs/orion:/var/log/
+      - ./config/orion/log-config.xml:/config/log-config.xml
 
   orion3:
     image: "pegasyseng/orion:develop"
     environment:
       - ORION_OTHERNODES=http://orion2:8080/,http://orion1:8080/
+      - LOG4J_CONFIGURATION_FILE=/config/log-config.xml
     command: ["/config/orion.conf"]
     volumes:
       - ./config/orion/orion.conf:/config/orion.conf
       - ./config/orion/networkFiles/orion3:/keys/
+      - ./logs/orion:/var/log/
+      - ./config/orion/log-config.xml:/config/log-config.xml
+
 
   bootnode:
     build:
@@ -78,6 +88,7 @@ services:
   node1:
     image: sample-network/besu:${BESU_VERSION}
     environment:
+      - LOG4J_CONFIGURATION_FILE=/config/log-config.xml
       - BESU_PUBLIC_KEY_DIRECTORY=${BESU_PUBLIC_KEY_DIRECTORY}
     command: [
       "--config-file=/config/config.toml",
@@ -93,6 +104,8 @@ services:
       - ./config/besu/config.toml:/config/config.toml
       - ./config/orion/networkFiles/orion1/nodeKey.pub:/config/orion/orion.pub
       - ./config/besu/networkFiles/node1/keys:/opt/besu/keys
+      - ./logs/besu:/var/log/
+      - ./config/besu/log-config.xml:/config/log-config.xml
     depends_on:
       - bootnode
       - orion1
@@ -103,6 +116,7 @@ services:
   node2:
     image: sample-network/besu:${BESU_VERSION}
     environment:
+      - LOG4J_CONFIGURATION_FILE=/config/log-config.xml
       - BESU_PUBLIC_KEY_DIRECTORY=${BESU_PUBLIC_KEY_DIRECTORY}
     command: [
       "--config-file=/config/config.toml",
@@ -118,6 +132,8 @@ services:
       - ./config/besu/config.toml:/config/config.toml
       - ./config/orion/networkFiles/orion2/nodeKey.pub:/config/orion/orion.pub
       - ./config/besu/networkFiles/node2/keys:/opt/besu/keys
+      - ./logs/besu:/var/log/
+      - ./config/besu/log-config.xml:/config/log-config.xml
     depends_on:
       - bootnode
       - orion2
@@ -128,6 +144,7 @@ services:
   node3:
     image: sample-network/besu:${BESU_VERSION}
     environment:
+      - LOG4J_CONFIGURATION_FILE=/config/log-config.xml      
       - BESU_PUBLIC_KEY_DIRECTORY=${BESU_PUBLIC_KEY_DIRECTORY}
     command: [
       "--config-file=/config/config.toml",
@@ -143,6 +160,8 @@ services:
       - ./config/besu/config.toml:/config/config.toml
       - ./config/orion/networkFiles/orion3/nodeKey.pub:/config/orion/orion.pub
       - ./config/besu/networkFiles/node3/keys:/opt/besu/keys
+      - ./logs/besu:/var/log/
+      - ./config/besu/log-config.xml:/config/log-config.xml
     depends_on:
       - bootnode
       - orion3
